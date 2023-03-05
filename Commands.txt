@@ -1,0 +1,50 @@
+Spark
+
+1) spark-shell
+2) val df = spark.read.format("csv").option("inferSchema", "true").option("header","true").load("s3://hivewithspark/DelayedFlights-updated.csv")
+3) df.createOrReplaceTempView("delay_flights");
+4) spark.time(spark.sql("SELECT Year, avg((CarrierDelay /ArrDelay)*100) as avg from delay_flights WHERE Year>=2003 AND Year<=2010 GROUP BY Year ORDER BY Year").show())
+
+Hive
+
+1) hive
+2)
+CREATE TABLE IF NOT EXISTS delay_flights (
+ id int,
+ Year int,
+ Month int,
+ DayofMonth int,
+ DayOfWeek int,
+ DepTime string,
+ CRSDepTime string,
+ ArrTime string,
+ CRSArrTime string,
+ UniqueCarrier string,
+ FlightNum int,
+ TailNum string,
+ ActualElapsedTime string,
+ CRSElapsedTime string,
+ AirTime string,
+ ArrDelay string,
+ DepDelay string,
+ Origin string,
+ Dest string,
+ Distance int,
+ TaxiIn int,
+ TaxiOut int,
+ Cancelled int,
+ CancellationCode string,
+ Diverted int,
+ CarrierDelay string,
+ WeatherDelay string,
+ NASDelay string,
+ SecurityDelay string,
+ LateAircraftDelay string)
+ COMMENT 'Delay flights Table'
+ ROW FORMAT DELIMITED
+ FIELDS TERMINATED BY ',';
+
+3)LOAD DATA INPATH 's3://hivewithspark/DelayedFlights-updated.csv' INTO TABLE delay_flights;
+4)set hive.cli.print.header=true;
+5)SELECT Year, avg((CarrierDelay /ArrDelay)*100) as avg from delay_flights WHERE Year>=2003 AND Year<=2010 GROUP BY Year ORDER BY Year;
+
